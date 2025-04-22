@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dream 11 Match Winner Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script>
+    async function predictWinner(event) {
+      event.preventDefault();
+
+      const form = document.getElementById("predictForm");
+      const data = {
+        city: form.city.value,
+        venue: form.venue.value,
+        team1: form.team1.value,
+        team2: form.team2.value,
+        toss_winner: form.toss_winner.value,
+        toss_decision: form.toss_decision.value,
+        target_runs: form.target_runs.value,
+        target_overs: form.target_overs.value,
+        home_advantage_team1: form.home_advantage_team1.value,
+        home_advantage_team2: form.home_advantage_team2.value
+      };
+
+      const response = await fetch("/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+      document.getElementById("result").innerText = `🏆 Predicted Winner: ${result.predicted_team}`;
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Dream 11 Match Winner Predictor</h1>
+    <form id="predictForm" onsubmit="predictWinner(event)">
+      <label for="city">City:</label>
+      <select name="city" required>
+        {% for city, idx in cities.items() %}
+          <option value="{{ idx }}">{{ city }}</option>
+        {% endfor %}
+      </select><br>
+
+      <label for="venue">Venue:</label>
+      <select name="venue" required>
+        {% for venue, idx in venues.items() %}
+          <option value="{{ idx }}">{{ venue }}</option>
+        {% endfor %}
+      </select><br>
+
+      <label for="team1">Team 1:</label>
+      <select name="team1" required>
+        {% for team, idx in teams.items() %}
+          <option value="{{ idx }}">{{ team }}</option>
+        {% endfor %}
+      </select><br>
+
+      <label for="team2">Team 2:</label>
+      <select name="team2" required>
+        {% for team, idx in teams.items() %}
+          <option value="{{ idx }}">{{ team }}</option>
+        {% endfor %}
+      </select><br>
+
+      <label for="toss_winner">Toss Winner:</label>
+      <select name="toss_winner" required>
+        {% for team, idx in teams.items() %}
+          <option value="{{ idx }}">{{ team }}</option>
+        {% endfor %}
+      </select><br>
+
+      <label for="toss_decision">Toss Decision:</label>
+      <select name="toss_decision" required>
+        <option value="0">Bat</option>
+        <option value="1">Field</option>
+      </select><br>
+
+      <label for="target_runs">Target Runs:</label>
+      <input type="number" name="target_runs" required><br>
+
+      <label for="target_overs">Target Overs:</label>
+      <input type="number" step="0.1" name="target_overs" required><br>
+
+      <label for="home_advantage_team1">Home Advantage Team 1:</label>
+      <select name="home_advantage_team1" required>
+        <option value="0">No</option>
+        <option value="1">Yes</option>
+      </select><br>
+
+      <label for="home_advantage_team2">Home Advantage Team 2:</label>
+      <select name="home_advantage_team2" required>
+        <option value="0">No</option>
+        <option value="1">Yes</option>
+      </select><br>
+
+      <button type="submit">Predict Winner</button>
+    </form>
+
+    <h2 id="result"></h2>
+  </div>
+</body>
+</html>
